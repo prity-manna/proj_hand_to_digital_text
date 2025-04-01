@@ -1,80 +1,3 @@
-// document.addEventListener("DOMContentLoaded", () => {
-//     const contentDiv = document.querySelector(".content");
-//     const navLinks = document.querySelectorAll(".nav-link");
-
-//     // Load Home content on page load
-//     let lastPage = sessionStorage.getItem("lastPage") || "/home/";
-//     loadPage(lastPage);
-
-//     navLinks.forEach(link => {
-//         link.addEventListener("click", (event) => {
-//             event.preventDefault();
-
-//             const page = link.getAttribute("data-page"); // Extract page name
-//             sessionStorage.setItem("lastPage", page); // Save in sessionStorage
-
-//             loadPage(page);
-//         });
-//     });
-
-//     function loadPage(page) {
-//         fetch(`/pages${page}`)
-//             .then(response => response.text())
-//             .then(html => {
-//                 contentDiv.innerHTML = html;
-
-//                 // Also update styles and scripts dynamically
-//                 updatePageStyles(`/pages${page}style.css`);
-//                 updatePageScripts(`/pages${page}script.js`);
-//                 const activeLink = [...navLinks].find(link => link.getAttribute("data-page") === page);
-//                 if (activeLink) updateActiveTab(activeLink);
-//             })
-//             .catch(() => contentDiv.innerHTML = "<h1>Page not found</h1>");
-//     }
-
-//     function updatePageStyles(cssPath) {
-//         fetch(cssPath, { method: 'HEAD' })
-//             .then(response => {
-//                 if (response.ok) {
-//                     const newStyle = document.createElement("link");
-//                     newStyle.rel = "stylesheet";
-//                     newStyle.href = cssPath;
-//                     newStyle.setAttribute("data-dynamic-style", "true");
-
-//                     document.head.appendChild(newStyle);
-//                 }
-//             })
-//             .catch(() => { }); // Silently ignore errors
-//     }
-
-//     function updatePageScripts(jsPath) {
-//         fetch(jsPath, { method: 'HEAD' })
-//             .then(response => {
-//                 if (response.ok) {
-//                     const newScript = document.createElement("script");
-//                     newScript.src = jsPath;
-//                     newScript.setAttribute("data-dynamic-script", "true");
-
-//                     newScript.onload = () => {
-//                         window.currentPageLoaded = null;
-//                         document.dispatchEvent(new Event("PageScriptLoaded"));
-//                     };
-
-//                     document.body.appendChild(newScript);
-//                 }
-//             })
-//             .catch(() => { }); // Silently ignore errors
-//     }
-
-//     // ✅ Function to update active tab styling
-//     function updateActiveTab(activeLink) {
-//         document.querySelectorAll(".nav-link").forEach(link => {
-//             link.classList.remove("current"); // Remove active class from all links
-//         });
-//         activeLink.classList.add("current"); // Add active class to selected link
-//     }
-// });
-
 document.addEventListener("DOMContentLoaded", () => {
     const contentDiv = document.querySelector(".content");
     const navLinks = document.querySelectorAll(".nav-link");
@@ -96,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     function loadPage(page) {
-        fetch(`/pages${page}`)
+        fetch(`./pages${page}`)
             .then(response => {
                 if (!response.ok) throw new Error(`Page ${page} not found`);
                 return response.text();
