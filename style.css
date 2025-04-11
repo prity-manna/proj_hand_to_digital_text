@@ -8,12 +8,144 @@
 body {
     display: flex !important;
     flex-direction: column !important;
-    /* overflow: hidden !important; */
     margin: 0 !important;
     padding: 0 !important;
+    width: 100%;
     background-image: url('https://images.unsplash.com/photo-1614850523011-8f49ffc73908?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Ymx1ZSUyMGJhY2tncm91bmR8ZW58MHx8MHx8fDA%3D') !important;
     background-size: content !important;
     background-repeat: cover !important;
+
+    .container {
+        margin: 0 1rem 0 1rem !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: stretch;
+        gap: 20px;
+    
+        .side-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+    
+            #animatedImage {
+                width: 300px;
+                height: 300px;
+                object-fit: cover;
+                position: absolute;
+                left: 0;
+                border-radius: 10px;
+                transition: transform 0.3s linear, box-shadow 0.3s ease-in-out, border 0.3s ease-in-out;
+                border: 5px solid transparent;
+                filter: drop-shadow(5px 5px 10px white);
+                top: 0;
+                z-index: 1;
+            }
+
+            #purpose {
+                width: 60vw;
+                text-align: center;
+                font-size: 2rem;
+            }
+        }
+
+        #button-element {
+            position: relative;
+            transition: 0.2s ease-in-out;
+
+            .button {
+                font-weight: 500;
+                border-radius: 5px;
+                padding: 0.75rem 1.5rem;
+                background-color: rgba(255, 255, 255, 0.3);
+                backdrop-filter: blur(15px);
+                box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+                transform: translate(0);
+                cursor: pointer;
+                transition: 0.2s ease-in-out;
+            }
+
+            .button:hover {
+                transform: translate(-2px,-2px);
+            }
+
+            .button-gradient {
+                position: absolute;
+                background: linear-gradient(
+                    20deg,
+                    rgb(92, 241, 76) 0%,
+                    rgb(53, 241, 229) 100%
+                );
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: -1;
+                border-radius: 5px;
+                transform: translate(0.5rem, 0.5rem);
+            }
+        }
+
+        #button-element > .button-gradient {
+            position: absolute;
+            background: linear-gradient(
+                20deg,
+                rgb(92, 241, 76) 0%,
+                rgb(53, 241, 229) 100%
+            );
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: -1;
+            border-radius: 3px;
+            transform: translate(0.5rem, 0.5rem);
+        }
+
+        #button-element:hover {
+            transform: translate(-2px,-2px);
+        }
+
+        /* .button {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            .btn {
+                border: 1px solid white;
+                padding: 10px 20px;
+                color: white;
+                font-size: 18px;
+                text-decoration: none;
+                transition: 0.5s ease;
+            }
+
+            .btn:hover {
+                background-color: white;
+                color: green;
+            }
+        } */
+    
+        .text-container {
+            text-decoration: none;
+            -webkit-transition: all 0.5s;
+            -moz-transition: all 0.5s;
+            transition: all 0.5s;
+            font-weight: bold;
+            white-space: nowrap;
+            margin: 0px !important;
+            -webkit-animation: neon6 1.5s ease-in-out infinite alternate;
+            -moz-animation: neon6 1.5s ease-in-out infinite alternate;
+            animation: neon6 1.5s ease-in-out infinite alternate;
+            color: white;
+            text-align: center;
+            font-size: 4em;
+        }
+    }
 }
 
 .nav {
@@ -65,5 +197,124 @@ body {
 
 .content {
     flex: 1 !important;
-    margin: 20px !important;
+    margin: 5rem 2rem 2rem 2rem !important;
+}
+
+.particle {
+    position: absolute;
+    border-radius: 50%;
+    background-color: yellow;
+    pointer-events: none;
+    opacity: 0.9;
+    filter: blur(2px);
+}
+
+.letter {
+    display: inline-block;
+    opacity: 0;
+    transform: scale(2);
+    animation: popIn 0.8s ease-out forwards;
+}
+
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: scale(2);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes explode {
+    0% {
+        transform: scale(1) translate(0, 0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(0) translate(var(--x), var(--y));
+        opacity: 0;
+    }
+}
+
+@-webkit-keyframes neon6 {
+    from {
+        text-shadow: 0 0 10px #fff,
+            0 0 20px #fff,
+            0 0 30px #fff,
+            0 0 40px #0000ff,
+            0 0 70px #0000ff,
+            0 0 80px #0000ff,
+            0 0 100px #0000ff,
+            0 0 150px #0000ff;
+    }
+
+    to {
+        text-shadow: 0 0 5px #fff,
+            0 0 10px #fff,
+            0 0 15px #fff,
+            0 0 20px #0000ff,
+            0 0 35px #0000ff,
+            0 0 40px #0000ff,
+            0 0 50px #0000ff,
+            0 0 75px #0000ff;
+    }
+}
+
+
+@-moz-keyframes neon6 {
+    from {
+        text-shadow: 0 0 10px #fff,
+            0 0 20px #fff,
+            0 0 30px #fff,
+            0 0 40px #0000ff,
+            0 0 70px #0000ff,
+            0 0 80px #0000ff,
+            0 0 100px #0000ff,
+            0 0 150px #0000ff;
+    }
+
+    to {
+        text-shadow: 0 0 5px #fff,
+            0 0 10px #fff,
+            0 0 15px #fff,
+            0 0 20px #0000ff,
+            0 0 35px #0000ff,
+            0 0 40px #0000ff,
+            0 0 50px #0000ff,
+            0 0 75px #0000ff;
+    }
+}
+
+@keyframes neon6 {
+    from {
+        text-shadow: 0 0 10px #fff,
+            0 0 20px #fff,
+            0 0 30px #fff,
+            0 0 40px #0000ff,
+            0 0 70px #0000ff,
+            0 0 80px #0000ff,
+            0 0 100px #0000ff,
+            0 0 150px #0000ff;
+    }
+
+    to {
+        text-shadow: 0 0 5px #fff,
+            0 0 10px #fff,
+            0 0 15px #fff,
+            0 0 20px #0000ff,
+            0 0 35px #0000ff,
+            0 0 40px #0000ff,
+            0 0 50px #0000ff,
+            0 0 75px #0000ff,
+            0 0 100px #0000ff;
+    }
 }
