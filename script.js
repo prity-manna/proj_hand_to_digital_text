@@ -1,5 +1,8 @@
+const height = document.querySelector('header').offsetHeight;
+document.documentElement.style.setProperty('--header-item-height', (height + 20) + 'px');
+
 document.addEventListener("DOMContentLoaded", () => {
-  startTextAnimation();
+  startOptimizedTextAnimation();
   startImageRotation();
   const contentDiv = document.querySelector(".content");
   const navLinks = document.querySelectorAll(".nav-link");
@@ -18,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   function loadPage(page) {
-    cleanupPage(); // Remove existing scripts/styles
+    cleanupPage();
 
     fetch(`./pages${page}`)
       .then(response => response.ok ? response.text() : Promise.reject())
@@ -38,10 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     contentDiv.innerHTML = newContent.innerHTML;
     loadAssets(doc);
-
-    if (page === "/home/") {
-      loadHomeScript();
-    }
 
     const activeLink = [...navLinks].find(link => link.getAttribute("data-page") === page);
     if (activeLink) updateActiveTab(activeLink);
@@ -82,28 +81,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const newScript = document.createElement("script");
         newScript.src = jsPath;
         newScript.setAttribute("data-dynamic-script", "true");
-        console.log(newScript);
         document.body.appendChild(newScript);
       }
     });
-  }
-
-  function loadHomeScript() {
-    loadSwiper(() => {
-      // Remove old home script if exists
-      document.querySelectorAll("script[data-home-script]").forEach(script => script.remove());
-    });
-  }
-
-  function loadSwiper(callback) {
-    if (!document.querySelector(`script[src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"]`)) {
-      const swiperScript = document.createElement("script");
-      swiperScript.src = "https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js";
-      swiperScript.onload = callback;  // Run home script after Swiper loads
-      document.body.appendChild(swiperScript);
-    } else {
-      callback();
-    }
   }
 });
 
@@ -111,6 +91,13 @@ function startImageRotation() {
   const images = ["assets/images/image1.jpg", "assets/images/image2.jpg"];
   let imagesIndex = 0;
   const imgElement = document.getElementById("animatedImage");
+  
+  if (!imgElement) return;
+
+  images.forEach(src => {
+    const img = new Image();
+    img.src = src;
+  });
 
   function changeImage() {
     setTimeout(() => {
@@ -134,55 +121,109 @@ function startImageRotation() {
   setInterval(changeImage, 2500);
 }
 
-function startTextAnimation() {
+function startOptimizedTextAnimation() {
   const textElement = document.getElementById("text");
-  const text = "HAND TO DIGITAL TEXT";
-  let index = 0;
-
+  if (!textElement) return;
+  
+  const text = textElement.getAttribute("data-text") || "HAND TO DIGITAL TEXT";
+  let isAnimating = false;
+  let animationTimeout;
+  let particleContainer = null;
+  
+  function createParticleContainer() {
+    if (particleContainer) return;
+    
+    particleContainer = document.createElement("div");
+    particleContainer.className = "particle-container";
+    particleContainer.style.position = "fixed";
+    particleContainer.style.top = "0";
+    particleContainer.style.left = "0";
+    particleContainer.style.right = "0";
+    particleContainer.style.bottom = "0";
+    particleContainer.style.width = "100%";
+    particleContainer.style.height = "100%";
+    particleContainer.style.pointerEvents = "none";
+    particleContainer.style.zIndex = "1000";
+    document.body.appendChild(particleContainer);
+  }
+  
+  function clearParticles() {
+    if (particleContainer) {
+      particleContainer.innerHTML = '';
+    }
+  }
+  
   function typeEffect() {
-    if (index < text.length) {
+    if (isAnimating) return;
+    isAnimating = true;
+    
+    createParticleContainer();
+    clearParticles();
+    textElement.innerHTML = "";
+    
+    text.split('').forEach((char, index) => {
       const span = document.createElement("span");
       span.classList.add("letter");
-      span.textContent = text[index] === ' ' ? '\u00A0' : text[index];
+      span.textContent = char === ' ' ? '\u00A0' : char;
+      span.style.animationDelay = `${index * 120}ms`;
       textElement.appendChild(span);
-
-      const rect = span.getBoundingClientRect();
-      createParticle(rect.left + rect.width / 2, rect.top + rect.height / 2);
-      index++;
-      setTimeout(typeEffect, 120);
-    } else {
+      
       setTimeout(() => {
-        textElement.innerHTML = "";
-        index = 0;
-        typeEffect();
-      }, 5000);
+        const rect = span.getBoundingClientRect();
+        createOptimizedParticle(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      }, index * 120);
+    });
+    
+    const totalDuration = text.length * 120 + 5000;
+    animationTimeout = setTimeout(() => {
+      isAnimating = false;
+      typeEffect();
+    }, totalDuration);
+  }
+  
+  function createOptimizedParticle(x, y) {
+    const particleCount = 10;
+    const colors = ["#FBDB4A", "#F3934A", "#EB547D", "#9F6AA7", "#5476B3", "#2BB19B", "#70B984", "#FF69B4", "#00FFFF", "#FFD700"];
+    
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement("div");
+      particle.classList.add("particle");
+      particleContainer.appendChild(particle);
+      particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      particle.style.left = `${x}px`;
+      particle.style.top = `${y}px`;
+      
+      const size = Math.random() * 20 + 10;
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
+      const angle = Math.random() * 2 * Math.PI;
+      const distance = Math.random() * 200 + 200;
+      particle.style.setProperty('--x', `${Math.cos(angle) * distance}px`);
+      particle.style.setProperty('--y', `${Math.sin(angle) * distance}px`);
+      particle.style.animation = "explode 3s ease-out forwards";
+      setTimeout(() => {
+        if (particleContainer.contains(particle)) {
+          particle.remove();
+        }
+      }, 2000);
     }
   }
 
   typeEffect();
-}
 
-function createParticle(x, y) {
-  for (let i = 0; i < 10; i++) {
-    const particle = document.createElement("div");
-    particle.classList.add("particle");
-    document.body.appendChild(particle);
-
-    const colors = ["#FBDB4A", "#F3934A", "#EB547D", "#9F6AA7", "#5476B3", "#2BB19B", "#70B984", "#FF69B4", "#00FFFF", "#FFD700"];
-    particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-    particle.style.left = `${x}px`;
-    particle.style.top = `${y}px`;
-
-    const size = Math.random() * 20 + 10;
-    particle.style.width = `${size}px`;
-    particle.style.height = `${size}px`;
-
-    const angle = Math.random() * 2 * Math.PI;
-    const distance = Math.random() * 200 + 200;
-    particle.style.setProperty('--x', `${Math.cos(angle) * distance}px`);
-    particle.style.setProperty('--y', `${Math.sin(angle) * distance}px`);
-
-    particle.style.animation = "explode 2.8s ease-out forwards";
-    setTimeout(() => particle.remove(), 2800);
-  }
+  window.addEventListener('beforeunload', () => {
+    clearTimeout(animationTimeout);
+    if (particleContainer) {
+      particleContainer.remove();
+    }
+  });
+  
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      clearTimeout(animationTimeout);
+      isAnimating = false;
+    } else if (!isAnimating) {
+      typeEffect();
+    }
+  });
 }
